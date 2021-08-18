@@ -1,0 +1,12 @@
+name: PlayTime
+version: '${project.version}'
+main: me.reportcardsmc.github.playtime.PlayTime
+api-version: 1.16
+prefix: Playtime
+authors: [ ReportCards ]
+description: Check your playtime, or someone elses
+commands:
+  playtime:
+    description: Check your playtime, or someone elses
+    usage: "playtime [player]"
+    aliases: [pt, ptime]
