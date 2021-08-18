@@ -9,4 +9,4 @@ commands:
   playtime:
     description: Check your playtime, or someone elses
     usage: "playtime [player]"
-    aliases: [pt, ptime]
+    aliases: [ pt, ptime ]

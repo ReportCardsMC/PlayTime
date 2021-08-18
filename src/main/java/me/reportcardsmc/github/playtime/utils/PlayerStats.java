@@ -50,6 +50,7 @@ public class PlayerStats {
     public long averageSession() {
         return this.timePlayed / (sessions + 1);
     }
+
     public long averageSessionOffline() {
         return this.timePlayed / (sessions);
     }
