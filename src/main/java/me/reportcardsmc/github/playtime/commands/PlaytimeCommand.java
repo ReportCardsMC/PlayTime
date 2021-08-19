@@ -113,11 +113,12 @@ public class PlaytimeCommand implements CommandExecutor, TabCompleter {
             long firstJoin = player.getFirstPlayed();
             long lastSession = data.getLastSession();
             long averageSession = data.averageSessionOffline();
+            long sessions = data.getSessions();
 
             viewer.sendMessage(Text.color("&6&l » &ePlaytime Stats &7(" + player.getName() + "&7)"));
-            viewer.sendMessage(Text.color("&6"));
             viewer.sendMessage(Text.color("&6&lGENERAL"));
             viewer.sendMessage(Text.color("&6 »&e First Join: &f" + Text.dateToString(firstJoin) + " &7(UTC)"));
+            viewer.sendMessage(Text.color("&6 »&e Total Joins: &f" + Text.formatComma(sessions)));
             viewer.sendMessage(Text.color("&6 »&e Time Played: &f" + Text.msToFormat(secondsPlayed)));
             viewer.sendMessage(Text.color("&6"));
             viewer.sendMessage(Text.color("&6&lSESSION"));
@@ -134,11 +135,12 @@ public class PlaytimeCommand implements CommandExecutor, TabCompleter {
         long curSession = PlayerSession.getCurrentSession(player);
         long lastSession = PlayTime.instance.playerData.get(player.getUniqueId()).getLastSession();
         long averageSession = PlayTime.instance.playerData.get(player.getUniqueId()).averageSession();
+        long sessions = PlayTime.instance.playerData.get(player.getUniqueId()).getSessions();
 
         viewer.sendMessage(Text.color("&6&l » &ePlaytime Stats &7(" + player.getName() + "&7)"));
-        viewer.sendMessage(Text.color("&6"));
         viewer.sendMessage(Text.color("&6&lGENERAL"));
         viewer.sendMessage(Text.color("&6 »&e First Join: &f" + Text.dateToString(firstJoin) + " &7(UTC)"));
+        viewer.sendMessage(Text.color("&6 »&e Total Joins: &f" + Text.formatComma(sessions)));
         viewer.sendMessage(Text.color("&6 »&e Time Played: &f" + Text.msToFormat(secondsPlayed)));
         viewer.sendMessage(Text.color("&6"));
         viewer.sendMessage(Text.color("&6&lSESSION"));
