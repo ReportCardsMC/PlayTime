@@ -1,4 +1,4 @@
-package me.reportcardsmc.github.playtime.utils;
+package me.reportcardsmc.github.playtime.utils.players;
 
 import com.google.gson.Gson;
 import me.reportcardsmc.github.playtime.PlayTime;
@@ -13,7 +13,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
-public class Data {
+public class PlayerData {
 
     public static PlayerStats getPlayerData(UUID uuid) throws IOException {
         Gson gson = new Gson();
@@ -22,7 +22,14 @@ public class Data {
         File playerFile = new File(folder, uuid.toString() + ".json");
         if (!playerFile.exists() && Bukkit.getPlayer(uuid) != null) {
             if (!playerFile.createNewFile()) throw new IOException("Can't create player data folder");
-            List<String> lines = Arrays.asList("{", "\"playTime\": 0,", "\"lastSession\": 0,", "\"sessions\": 0", "}");
+            List<String> lines = Arrays.asList(
+                    "// CHANGING ANY OF THESE VALUES CAN BREAK SOMETHING, KNOW WHAT YOU'RE DOING BEFORE CHANGING ANYTHING.",
+                    "{",
+                    "\"playTime\": 0,",
+                    "\"lastSession\": 0,",
+                    "\"sessions\": 0",
+                    "}"
+            );
             Files.write(playerFile.toPath(), lines, StandardCharsets.UTF_8);
         } else if (!playerFile.exists() && Bukkit.getPlayer(uuid) == null) {
             return null;

@@ -1,4 +1,4 @@
-package me.reportcardsmc.github.playtime.utils;
+package me.reportcardsmc.github.playtime.utils.players;
 
 import com.google.gson.Gson;
 

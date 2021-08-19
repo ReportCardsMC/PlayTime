@@ -1,24 +1,26 @@
-package me.reportcardsmc.github.playtime.utils;
+package me.reportcardsmc.github.playtime.utils.players;
 
 import me.reportcardsmc.github.playtime.PlayTime;
+import me.reportcardsmc.github.playtime.utils.server.ServerData;
 import org.bukkit.entity.Player;
 
 import java.io.IOException;
 import java.time.Instant;
 
-public class PTUtil {
+public class PlayTimeUtilities {
 
     public static long updatePlayTime(Player player) {
         long now = Instant.now().toEpochMilli();
         long diff = now - lastPlayTimeUpdate(player);
         try {
             if (!PlayTime.instance.playerData.containsKey(player.getUniqueId()))
-                Data.getPlayerData(player.getUniqueId());
+                PlayerData.getPlayerData(player.getUniqueId());
         } catch (IOException e) {
             return -1;
         }
         if (!PlayTime.instance.playerData.containsKey(player.getUniqueId())) return -1;
         long current = PlayTime.instance.playerData.get(player.getUniqueId()).timePlayed;
+        PlayTime.instance.serverStats.addTotalPlayTime(diff);
         return PlayTime.instance.playerData.get(player.getUniqueId()).setTimePlayed(current + diff);
     }
 

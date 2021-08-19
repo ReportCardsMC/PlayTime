@@ -3,6 +3,7 @@ package me.reportcardsmc.github.playtime.utils;
 import net.kyori.adventure.text.Component;
 import org.bukkit.ChatColor;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Objects;
@@ -13,6 +14,11 @@ public class Text {
 
     public static Component color(String text) {
         return Component.text(ChatColor.translateAlternateColorCodes('&', text));
+    }
+
+    public static String formatComma(long number) {
+        DecimalFormat formatter = new DecimalFormat("#,###");
+        return formatter.format(number);
     }
 
     public static String dateToString(long mi) {

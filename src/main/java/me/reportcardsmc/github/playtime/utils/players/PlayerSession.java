@@ -1,12 +1,14 @@
-package me.reportcardsmc.github.playtime.utils;
+package me.reportcardsmc.github.playtime.utils.players;
 
 import me.reportcardsmc.github.playtime.PlayTime;
+import me.reportcardsmc.github.playtime.utils.server.ServerData;
+import me.reportcardsmc.github.playtime.utils.server.ServerStats;
 import org.bukkit.entity.Player;
 
 import java.io.IOException;
 import java.time.Instant;
 
-public class Session {
+public class PlayerSession {
 
     public static long getCurrentSession(Player player) {
         if (!PlayTime.instance.sessionStarts.containsKey(player.getUniqueId())) return -1;
@@ -27,8 +29,11 @@ public class Session {
         long session = Instant.now().toEpochMilli() - PlayTime.instance.sessionStarts.get(player.getUniqueId());
         playerStats.addSession(1);
         playerStats.setLastSession(session);
-        PTUtil.updatePlayTime(player);
-        Data.updatePlayerFile(player.getUniqueId());
+        PlayTimeUtilities.updatePlayTime(player);
+        PlayerData.updatePlayerFile(player.getUniqueId());
+//        ServerStats serverStats = PlayTime.instance.serverStats;
+//        serverStats.addTotalPlayTime(session);
+//        ServerData.updateServerFile();
 
         PlayTime.instance.sessionStarts.remove(player.getUniqueId());
         PlayTime.instance.playerData.remove(player.getUniqueId());
