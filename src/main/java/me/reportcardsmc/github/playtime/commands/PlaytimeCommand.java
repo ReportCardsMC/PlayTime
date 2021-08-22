@@ -48,6 +48,10 @@ public class PlaytimeCommand implements CommandExecutor, TabCompleter {
                     if (sender.hasPermission("playtime.server")) sender.sendMessage("&e/playtime server &6- &eView overall server playtime stats");
                     break;
                 case "server":
+                    if (!sender.hasPermission("playtime.server")) {
+                        sender.sendMessage("&cInvalid Permissions.");
+                        break;
+                    }
                     sendServerStats(sender);
                     break;
                 default:
@@ -80,7 +84,6 @@ public class PlaytimeCommand implements CommandExecutor, TabCompleter {
         long uniqueJoins = serverStats.getUniqueJoins();
 
         sender.sendMessage(Text.color("&6&l » &eServer Playtime Stats"));
-        sender.sendMessage(Text.color("&6"));
         sender.sendMessage(Text.color("&6&lGENERAL"));
         sender.sendMessage(Text.color("&6 »&e Total Play Time: &f" + Text.msToFormat(totalTime)));
         sender.sendMessage(Text.color("&6 »&e Average Session: &f" + Text.msToFormat(averageSession)));
@@ -89,6 +92,7 @@ public class PlaytimeCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage(Text.color("&6 »&e Total Joins: &f" + Text.formatComma(totalJoins)));
         sender.sendMessage(Text.color("&6 »&e Unique Joins: &f" + Text.formatComma(uniqueJoins)));
         sender.sendMessage(Text.color("&6 »&e Avg. Joins a Player: &f" + Text.formatComma(Math.floorDiv(totalJoins, uniqueJoins))));
+        sender.sendMessage(Text.color("&6"));
     }
 
     private void sendStats(Player player) {

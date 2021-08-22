@@ -8,5 +8,5 @@ description: Check your playtime, or someone elses
 commands:
   playtime:
     description: Check your playtime, or someone elses
-    usage: "playtime [player]"
+    usage: "playtime [help]"
     aliases: [ pt, ptime ]
