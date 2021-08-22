@@ -1,8 +1,6 @@
 package me.reportcardsmc.github.playtime.utils.players;
 
 import me.reportcardsmc.github.playtime.PlayTime;
-import me.reportcardsmc.github.playtime.utils.server.ServerData;
-import me.reportcardsmc.github.playtime.utils.server.ServerStats;
 import org.bukkit.entity.Player;
 
 import java.io.IOException;

@@ -2,12 +2,13 @@ package me.reportcardsmc.github.playtime;
 
 import me.reportcardsmc.github.playtime.commands.PlaytimeCommand;
 import me.reportcardsmc.github.playtime.events.PlayerConnection;
-import me.reportcardsmc.github.playtime.utils.players.PlayerData;
 import me.reportcardsmc.github.playtime.utils.players.PlayTimeUtilities;
-import me.reportcardsmc.github.playtime.utils.players.PlayerStats;
+import me.reportcardsmc.github.playtime.utils.players.PlayerData;
 import me.reportcardsmc.github.playtime.utils.players.PlayerSession;
+import me.reportcardsmc.github.playtime.utils.players.PlayerStats;
 import me.reportcardsmc.github.playtime.utils.server.ServerData;
 import me.reportcardsmc.github.playtime.utils.server.ServerStats;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -25,6 +26,7 @@ public final class PlayTime extends JavaPlugin {
     public Map<UUID, Long> lastPlayTimeUpdate;
     public Map<UUID, Long> sessionStarts;
     public ServerStats serverStats;
+    int bstatsID = 12542;
 
     @Override
     public void onEnable() {
@@ -51,7 +53,7 @@ public final class PlayTime extends JavaPlugin {
         Objects.requireNonNull(this.getCommand("playtime")).setExecutor(new PlaytimeCommand());
 
         this.getServer().getPluginManager().registerEvents(new PlayerConnection(), this);
-
+        Metrics metrics = new Metrics(this, bstatsID);
     }
 
     @Override

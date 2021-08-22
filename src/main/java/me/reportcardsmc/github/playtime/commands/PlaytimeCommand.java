@@ -1,7 +1,7 @@
 package me.reportcardsmc.github.playtime.commands;
 
 import me.reportcardsmc.github.playtime.PlayTime;
-import me.reportcardsmc.github.playtime.utils.*;
+import me.reportcardsmc.github.playtime.utils.Text;
 import me.reportcardsmc.github.playtime.utils.players.PlayTimeUtilities;
 import me.reportcardsmc.github.playtime.utils.players.PlayerData;
 import me.reportcardsmc.github.playtime.utils.players.PlayerSession;
@@ -56,6 +56,14 @@ public class PlaytimeCommand implements CommandExecutor, TabCompleter {
                     break;
                 default:
                     Player online = Bukkit.getPlayer(args[0]);
+                    if (sender instanceof  Player) {
+                        Player player = (Player) (Player) sender;
+                        if (online != null && online == player && !player.hasPermission("playtime.others")) {
+                            player.sendMessage("&cInvalid Permissions!");
+                            break;
+                        }
+                    }
+
                     OfflinePlayer viewing = Bukkit.getOfflinePlayerIfCached(args[0]);
                     if (viewing == null) viewing = Bukkit.getOfflinePlayer(args[0]);
                     UUID uuid = viewing.getUniqueId();

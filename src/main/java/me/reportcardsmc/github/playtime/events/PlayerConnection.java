@@ -1,8 +1,8 @@
 package me.reportcardsmc.github.playtime.events;
 
 import me.reportcardsmc.github.playtime.PlayTime;
-import me.reportcardsmc.github.playtime.utils.players.PlayerData;
 import me.reportcardsmc.github.playtime.utils.players.PlayTimeUtilities;
+import me.reportcardsmc.github.playtime.utils.players.PlayerData;
 import me.reportcardsmc.github.playtime.utils.players.PlayerSession;
 import me.reportcardsmc.github.playtime.utils.server.ServerData;
 import org.bukkit.Bukkit;
@@ -16,7 +16,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.util.UUID;
 
 public class PlayerConnection implements Listener {
     @EventHandler

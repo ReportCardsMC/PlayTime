@@ -10,3 +10,4 @@ commands:
     description: Check your playtime, or someone elses
     usage: "playtime [help]"
     aliases: [ pt, ptime ]
+    permission: playtime.command
