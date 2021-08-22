@@ -99,7 +99,7 @@ public class PlaytimeCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage(Text.color("&6&lJOINS"));
         sender.sendMessage(Text.color("&6 »&e Total Joins: &f" + Text.formatComma(totalJoins)));
         sender.sendMessage(Text.color("&6 »&e Unique Joins: &f" + Text.formatComma(uniqueJoins)));
-        sender.sendMessage(Text.color("&6 »&e Avg. Joins a Player: &f" + Text.formatComma(Math.floorDiv(totalJoins, uniqueJoins))));
+        sender.sendMessage(Text.color("&6 »&e Avg. Joins a Player: &f" + Text.formatComma(Math.floorDiv(totalJoins, Math.max(uniqueJoins, 1)))));
         sender.sendMessage(Text.color("&6"));
     }
 
