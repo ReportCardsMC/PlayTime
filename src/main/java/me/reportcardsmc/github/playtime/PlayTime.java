@@ -64,13 +64,13 @@ public final class PlayTime extends JavaPlugin {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        playerData.forEach((uuid, stats) -> {
-            try {
-                PlayerData.updatePlayerFile(uuid);
-                PlayerSession.endSession(Objects.requireNonNull(Bukkit.getPlayer(uuid)));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
+//        playerData.forEach((uuid, stats) -> {
+//            try {
+//                PlayerData.updatePlayerFile(uuid);
+//                PlayerSession.endSession(Objects.requireNonNull(Bukkit.getPlayer(uuid)));
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        });
     }
 }

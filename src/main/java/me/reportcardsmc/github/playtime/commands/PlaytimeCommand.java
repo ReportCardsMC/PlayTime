@@ -28,7 +28,7 @@ public class PlaytimeCommand implements CommandExecutor, TabCompleter {
             if (!(sender instanceof Player)) {
                 sender.sendMessage(Text.color("&cYou input no arguments, this is a player only feature... Try /playtime help"));
                 return true;
-            }
+            } 
             Player player = ((Player) sender).getPlayer();
             assert player != null;
             UUID uuid = player.getUniqueId();
