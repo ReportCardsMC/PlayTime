@@ -14,14 +14,13 @@ public class PlayerSession {
         return Instant.now().toEpochMilli() - start;
     }
 
-    public static boolean startSession(Player player) throws IOException {
+    public static boolean startSession(Player player) {
         if (PlayTime.instance.sessionStarts.containsKey(player.getUniqueId())) return false;
         PlayTime.instance.sessionStarts.put(player.getUniqueId(), Instant.now().toEpochMilli());
-//        Data.getPlayerData(player.getUniqueId());
         return true;
     }
 
-    public static boolean endSession(Player player) throws IOException {
+    public static boolean endSession(Player player) {
         if (!PlayTime.instance.sessionStarts.containsKey(player.getUniqueId())) return false;
         PlayerStats playerStats = PlayTime.instance.playerData.get(player.getUniqueId());
         long session = Instant.now().toEpochMilli() - PlayTime.instance.sessionStarts.get(player.getUniqueId());
@@ -29,9 +28,6 @@ public class PlayerSession {
         playerStats.setLastSession(session);
         PlayTimeUtilities.updatePlayTime(player);
         PlayerData.updatePlayerFile(player.getUniqueId());
-//        ServerStats serverStats = PlayTime.instance.serverStats;
-//        serverStats.addTotalPlayTime(session);
-//        ServerData.updateServerFile();
 
         PlayTime.instance.sessionStarts.remove(player.getUniqueId());
         PlayTime.instance.playerData.remove(player.getUniqueId());

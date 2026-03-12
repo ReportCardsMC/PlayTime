@@ -11,12 +11,10 @@ public class PlayTimeUtilities {
     public static long updatePlayTime(Player player) {
         long now = Instant.now().toEpochMilli();
         long diff = now - lastPlayTimeUpdate(player);
-        try {
-            if (!PlayTime.instance.playerData.containsKey(player.getUniqueId()))
-                PlayerData.getPlayerData(player.getUniqueId());
-        } catch (IOException e) {
-            return -1;
-        }
+
+        if (!PlayTime.instance.playerData.containsKey(player.getUniqueId()))
+            PlayerData.getPlayerData(player.getUniqueId());
+
         if (!PlayTime.instance.playerData.containsKey(player.getUniqueId())) return -1;
         long current = PlayTime.instance.playerData.get(player.getUniqueId()).timePlayed;
         PlayTime.instance.serverStats.addTotalPlayTime(diff);

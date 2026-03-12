@@ -1,51 +1,77 @@
 package me.reportcardsmc.github.playtime.utils.players;
 
-import com.google.gson.Gson;
 import me.reportcardsmc.github.playtime.PlayTime;
-import org.bukkit.Bukkit;
+import me.reportcardsmc.github.playtime.utils.SQLiteDatabase;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.List;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.UUID;
 
 public class PlayerData {
 
-    public static PlayerStats getPlayerData(UUID uuid) throws IOException {
-        Gson gson = new Gson();
-        File folder = new File(Paths.get(PlayTime.instance.getDataFolder() + "/players").toString());
-        if (!folder.exists()) folder.mkdirs();
-        File playerFile = new File(folder, uuid.toString() + ".json");
-        if (!playerFile.exists() && Bukkit.getPlayer(uuid) != null) {
-            if (!playerFile.createNewFile()) throw new IOException("Can't create player data folder");
-            List<String> lines = Arrays.asList(
-                    "// CHANGING ANY OF THESE VALUES CAN BREAK SOMETHING, KNOW WHAT YOU'RE DOING BEFORE CHANGING ANYTHING.",
-                    "{",
-                    "\"playTime\": 0,",
-                    "\"lastSession\": 0,",
-                    "\"sessions\": 0",
-                    "}"
-            );
-            Files.write(playerFile.toPath(), lines, StandardCharsets.UTF_8);
-        } else if (!playerFile.exists() && Bukkit.getPlayer(uuid) == null) {
-            return null;
+    public static PlayerStats getPlayerData(UUID uuid) {
+        PlayerStats playerStats = null;
+        String query = "SELECT timePlayed, lastSession, sessions FROM player_stats WHERE uuid = ?";
+
+        try (PreparedStatement pstmt = SQLiteDatabase.getConnection().prepareStatement(query)) {
+
+            pstmt.setString(1, uuid.toString());
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    long timePlayed = rs.getLong("timePlayed");
+                    long lastSession = rs.getLong("lastSession");
+                    long sessions = rs.getLong("sessions");
+                    playerStats = new PlayerStats(timePlayed, lastSession, sessions, 0); // Assuming 0 for totalSessionTime as it's not saved
+                } else if (org.bukkit.Bukkit.getPlayer(uuid) != null) {
+                    // If player is online but doesn't exist in DB, create new stats
+                    playerStats = new PlayerStats(0, 0, 0, 0);
+                    insertNewPlayer(uuid, playerStats);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-        PlayerStats playerStats = gson.fromJson(Files.newBufferedReader(playerFile.toPath()), PlayerStats.class);
-        if (!PlayTime.instance.playerData.containsKey(uuid)) PlayTime.instance.playerData.put(uuid, playerStats);
+
+        if (playerStats != null) {
+            PlayTime.instance.playerData.putIfAbsent(uuid, playerStats);
+        }
+
         return playerStats;
     }
 
-    public static void updatePlayerFile(UUID uuid) throws IOException {
-        File folder = new File(Paths.get(PlayTime.instance.getDataFolder() + "/players").toString());
-        if (!folder.exists()) folder.mkdirs();
-        File playerFile = new File(folder, uuid.toString() + ".json");
-        if (!playerFile.exists()) throw new IOException("Player doesn't currently have a file");
-        String data = PlayTime.instance.playerData.get(uuid).getJson();
-        Files.write(playerFile.toPath(), Arrays.asList(data.split("\n")), StandardCharsets.UTF_8);
+    private static void insertNewPlayer(UUID uuid, PlayerStats stats) {
+        String insert = "INSERT INTO player_stats(uuid, timePlayed, lastSession, sessions) VALUES(?, ?, ?, ?)";
+        try (PreparedStatement pstmt = SQLiteDatabase.getConnection().prepareStatement(insert)) {
+            pstmt.setString(1, uuid.toString());
+            pstmt.setLong(2, stats.getTimePlayed());
+            pstmt.setLong(3, stats.getLastSession());
+            pstmt.setLong(4, stats.getSessions());
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void updatePlayerFile(UUID uuid) {
+        if (!PlayTime.instance.playerData.containsKey(uuid)) return;
+        PlayerStats stats = PlayTime.instance.playerData.get(uuid);
+        String update = "UPDATE player_stats SET timePlayed = ?, lastSession = ?, sessions = ? WHERE uuid = ?";
+
+        try (PreparedStatement pstmt = SQLiteDatabase.getConnection().prepareStatement(update)) {
+            pstmt.setLong(1, stats.getTimePlayed());
+            pstmt.setLong(2, stats.getLastSession());
+            pstmt.setLong(3, stats.getSessions());
+            pstmt.setString(4, uuid.toString());
+            int affectedRows = pstmt.executeUpdate();
+
+            if (affectedRows == 0) {
+                 insertNewPlayer(uuid, stats);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
 }

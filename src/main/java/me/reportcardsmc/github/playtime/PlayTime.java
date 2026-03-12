@@ -8,16 +8,17 @@ import me.reportcardsmc.github.playtime.utils.players.PlayerSession;
 import me.reportcardsmc.github.playtime.utils.players.PlayerStats;
 import me.reportcardsmc.github.playtime.utils.server.ServerData;
 import me.reportcardsmc.github.playtime.utils.server.ServerStats;
+import me.reportcardsmc.github.playtime.utils.SQLiteDatabase;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
-import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public final class PlayTime extends JavaPlugin {
 
@@ -31,22 +32,21 @@ public final class PlayTime extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
-        playerData = new HashMap<>();
-        lastPlayTimeUpdate = new HashMap<>();
-        sessionStarts = new HashMap<>();
-        try {
-            serverStats = ServerData.getServerStats();
-        } catch (IOException e) {
-            e.printStackTrace();
+        playerData = new ConcurrentHashMap<>();
+        lastPlayTimeUpdate = new ConcurrentHashMap<>();
+        sessionStarts = new ConcurrentHashMap<>();
+
+        SQLiteDatabase.initialize(getDataFolder());
+
+        serverStats = ServerData.getServerStats();
+        if (serverStats == null) {
+            this.getLogger().severe("Could not initialize server stats!");
             this.getPluginLoader().disablePlugin(this);
+            return;
         }
 
         for (Player player : Bukkit.getOnlinePlayers()) {
-            try {
-                PlayerSession.startSession(player);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            PlayerSession.startSession(player);
             PlayTimeUtilities.updatePlayTime(player);
         }
 
@@ -54,23 +54,40 @@ public final class PlayTime extends JavaPlugin {
 
         this.getServer().getPluginManager().registerEvents(new PlayerConnection(), this);
         Metrics metrics = new Metrics(this, bstatsID);
+
+        // Synchronous task for updating playtime in memory every 10 seconds
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                for (Player player : Bukkit.getOnlinePlayers()) {
+                    PlayTimeUtilities.updatePlayTime(player);
+                }
+            }
+        }.runTaskTimer(this, 0, 200);
+
+        // Asynchronous task for saving data to the database every 60 seconds
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                ServerData.updateServerFile();
+                // We shouldn't use Bukkit.getOnlinePlayers() in an async task, so iterate over the tracked data instead.
+                for (UUID uuid : playerData.keySet()) {
+                    PlayerData.updatePlayerFile(uuid);
+                }
+            }
+        }.runTaskTimerAsynchronously(this, 0, 1200);
     }
 
     @Override
     public void onDisable() {
         // Plugin shutdown logic
-        try {
-            ServerData.updateServerFile();
-        } catch (IOException e) {
-            e.printStackTrace();
+        ServerData.updateServerFile();
+
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            PlayerData.updatePlayerFile(player.getUniqueId());
+            PlayerSession.endSession(player);
         }
-//        playerData.forEach((uuid, stats) -> {
-//            try {
-//                PlayerData.updatePlayerFile(uuid);
-//                PlayerSession.endSession(Objects.requireNonNull(Bukkit.getPlayer(uuid)));
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        });
+
+        SQLiteDatabase.close();
     }
 }

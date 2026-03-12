@@ -17,7 +17,6 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
@@ -113,11 +112,8 @@ public class PlaytimeCommand implements CommandExecutor, TabCompleter {
             sendStats(viewer, p);
         }
         UUID uuid = player.getUniqueId();
-        PlayerStats data = null;
-        try {
-            data = PlayerData.getPlayerData(uuid);
-        } catch (IOException ignored) {
-        }
+        PlayerStats data = PlayerData.getPlayerData(uuid);
+
         if (data == null) viewer.sendMessage(Text.color("&cThis player has no stats"));
         else {
 
